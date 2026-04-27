@@ -1,0 +1,19 @@
+{
+  "session": 1,
+  "date": "2026-04-27",
+  "topic": "Базовые приветствия",
+  "words_learned": [
+    "Сәлем", "Сәлеметсіз бе", "Қалайсың?", "Жақсы",
+    "Рахмет", "Иә", "Жоқ", "Сау бол"
+  ],
+  "exercises": [
+    {"question": "Спасибо", "expected": "Рахмет", "answer": "Рахмет", "correct": true},
+    {"question": "Привет", "expected": "Сәлем", "answer": "Салем", "correct": true, "note": "Близко, ошибка в букве Ә"},
+    {"question": "Нет", "expected": "Жоқ", "answer": "жоқ", "correct": true},
+    {"question": "Хорошо", "expected": "Жақсы", "answer": "жақсы", "correct": true},
+    {"question": "До свидания", "expected": "Сау бол", "answer": "сау болыңыз", "correct": true, "note": "Использована формальная версия"}
+  ],
+  "score": 5,
+  "total": 5,
+  "percentage": 100
+}

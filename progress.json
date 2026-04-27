@@ -1,10 +1,19 @@
 {
   "learner": "RatushnenkoV",
   "started": "2026-04-27",
-  "total_sessions": 0,
-  "total_words_learned": 0,
-  "total_exercises": 0,
-  "total_correct": 0,
-  "topics_covered": [],
-  "sessions": []
+  "total_sessions": 1,
+  "total_words_learned": 8,
+  "total_exercises": 5,
+  "total_correct": 5,
+  "topics_covered": ["Базовые приветствия"],
+  "sessions": [
+    {
+      "session": 1,
+      "date": "2026-04-27",
+      "topic": "Базовые приветствия",
+      "score": 5,
+      "total": 5,
+      "percentage": 100
+    }
+  ]
 }
