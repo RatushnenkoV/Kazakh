@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Казахские числа — тренажёр</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    h1 { font-size: 1.2rem; color: #94a3b8; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+    .subtitle { color: #475569; font-size: 0.8rem; margin-bottom: 24px; }
+
+    /* Settings */
+    .settings { width: 100%; max-width: 600px; margin-bottom: 20px; }
+
+    .settings-row { margin-bottom: 14px; }
+    .settings-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .chip {
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 2px solid #334155;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .chip:hover { border-color: #3b82f6; color: #e2e8f0; }
+    .chip.active { border-color: #3b82f6; background: #1d4ed8; color: #fff; }
+
+    /* Stats bar */
+    .stats {
+      width: 100%; max-width: 600px;
+      display: flex; gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      flex: 1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; }
+    .stat-label { font-size: 0.7rem; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .stat.streak .stat-value { color: #f59e0b; }
+    .stat.correct .stat-value { color: #4ade80; }
+
+    /* Card */
+    .card {
+      width: 100%; max-width: 600px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 32px 28px;
+    }
+
+    .direction-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      color: #64748b;
+      background: #0f172a;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    .question-number {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .question-kazakh {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .question-sub {
+      font-size: 0.8rem;
+      color: #475569;
+      margin-bottom: 28px;
+    }
+
+    /* Options grid */
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 400px) {
+      .options { grid-template-columns: 1fr; }
+    }
+
+    .opt-btn {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 14px;
+      color: #e2e8f0;
+      cursor: pointer;
+      padding: 14px 12px;
+      text-align: center;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: all 0.15s;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: #3b82f6;
+      background: #1e3a5f;
+      transform: translateY(-2px);
+    }
+
+    .opt-btn.correct { border-color: #22c55e; background: #052e16; color: #86efac; }
+    .opt-btn.wrong   { border-color: #ef4444; background: #2d0707; color: #fca5a5; }
+    .opt-btn:disabled { cursor: not-allowed; transform: none; }
+
+    /* Feedback */
+    .feedback {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+    }
+    .feedback.correct { background: #052e16; border: 1px solid #166534; color: #86efac; }
+    .feedback.wrong   { background: #2d0707; border: 1px solid #7f1d1d; color: #fca5a5; }
+    .feedback .breakdown { margin-top: 6px; font-size: 0.8rem; color: #64748b; font-family: monospace; }
+
+    /* Next */
+    .next-btn {
+      display: none;
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .next-btn:hover { opacity: 0.9; }
+
+    /* Progress */
+    .progress-bar { width: 100%; max-width: 600px; height: 4px; background: #1e293b; border-radius: 99px; margin-bottom: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border-radius: 99px; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+
+<h1>Казахские числа</h1>
+<p class="subtitle">Тренажёр · выбери сложность и направление</p>
+
+<!-- Settings -->
+<div class="settings">
+  <div class="settings-row">
+    <div class="settings-label">Сложность</div>
+    <div class="chips" id="difficulty-chips">
+      <div class="chip active" data-val="1">1 знак<br><small style="color:#64748b">1–9</small></div>
+      <div class="chip" data-val="2">2 знака<br><small style="color:#64748b">10–99</small></div>
+      <div class="chip" data-val="3">3 знака<br><small style="color:#64748b">100–999</small></div>
+      <div class="chip" data-val="4">4 знака<br><small style="color:#64748b">1 000–9 999</small></div>
+      <div class="chip" data-val="5">5 знаков<br><small style="color:#64748b">10 000–99 999</small></div>
+      <div class="chip" data-val="6">6 знаков<br><small style="color:#64748b">100 000–999 999</small></div>
+      <div class="chip" data-val="mix">Микс</div>
+    </div>
+  </div>
+  <div class="settings-row">
+    <div class="settings-label">Направление</div>
+    <div class="chips" id="direction-chips">
+      <div class="chip active" data-val="n2k">Цифра → Казахский</div>
+      <div class="chip" data-val="k2n">Казахский → Цифра</div>
+      <div class="chip" data-val="mix">Оба</div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-value" id="stat-total">0</div>
+    <div class="stat-label">Всего</div>
+  </div>
+  <div class="stat correct">
+    <div class="stat-value" id="stat-correct">0</div>
+    <div class="stat-label">Верно</div>
+  </div>
+  <div class="stat streak">
+    <div class="stat-value" id="stat-streak">0</div>
+    <div class="stat-label">Серия</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="stat-pct">—</div>
+    <div class="stat-label">%</div>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="progress-bar" style="max-width:600px">
+  <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+</div>
+
+<!-- Card -->
+<div class="card">
+  <div class="direction-badge" id="dir-badge">Цифра → Казахский</div>
+  <div id="question-display"></div>
+  <div class="question-sub" id="question-sub"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">Следующий →</button>
+</div>
+
+<script>
+// ── Казахская числовая система ──────────────────────────────
+const ONES = ['','бір','екі','үш','төрт','бес','алты','жеті','сегіз','тоғыз'];
+const TENS = ['','он','жиырма','отыз','қырық','елу','алпыс','жетпіс','сексен','тоқсан'];
+
+function toKazakh(n) {
+  if (n === 0) return 'нөл';
+  let parts = [];
+  if (n >= 1000000) { parts.push(toKazakh(Math.floor(n/1000000)) + ' миллион'); n %= 1000000; }
+  if (n >= 100000)  {
+    const h = Math.floor(n/100000);
+    parts.push((h === 1 ? '' : ONES[h] + ' ') + 'жүз мың');
+    n %= 100000;
+  }
+  if (n >= 10000)   { parts.push(TENS[Math.floor(n/10000)] + ' мың'); n %= 10000; }
+  if (n >= 1000)    {
+    const th = Math.floor(n/1000);
+    parts.push((th === 1 ? '' : toKazakh(th) + ' ') + 'мың');
+    n %= 1000;
+  }
+  if (n >= 100) {
+    const h = Math.floor(n/100);
+    parts.push((h === 1 ? '' : ONES[h] + ' ') + 'жүз');
+    n %= 100;
+  }
+  if (n >= 10) { parts.push(TENS[Math.floor(n/10)]); n %= 10; }
+  if (n > 0)   { parts.push(ONES[n]); }
+  return parts.filter(Boolean).join(' ');
+}
+
+function formatNum(n) {
+  return n.toLocaleString('ru-RU');
+}
+
+// Breakdown: show structure of number
+function breakdown(n) {
+  if (n < 10) return '';
+  let parts = [];
+  let orig = n;
+  if (n >= 100000) { const h=Math.floor(n/100000); parts.push(`${h}00 000 = ${(h===1?'':''+ONES[h]+' ')}жүз мың`); n%=100000; }
+  if (n >= 10000)  { const t=Math.floor(n/10000);  parts.push(`${t}0 000 = ${TENS[t]} мың`); n%=10000; }
+  if (n >= 1000)   { const th=Math.floor(n/1000);  parts.push(`${th} 000 = ${th===1?'':''+toKazakh(th)+' '}мың`); n%=1000; }
+  if (n >= 100)    { const h=Math.floor(n/100);    parts.push(`${h}00 = ${h===1?'':ONES[h]+' '}жүз`); n%=100; }
+  if (n >= 10)     { const t=Math.floor(n/10);     parts.push(`${t}0 = ${TENS[t]}`); n%=10; }
+  if (n > 0)       { parts.push(`${n} = ${ONES[n]}`); }
+  return parts.length > 1 ? parts.join('\n') : '';
+}
+
+// ── Генерация чисел ──────────────────────────────────────────
+function randInRange(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const RANGES = {
+  '1': [1, 9],
+  '2': [10, 99],
+  '3': [100, 999],
+  '4': [1000, 9999],
+  '5': [10000, 99999],
+  '6': [100000, 999999],
+};
+
+function pickDifficulty() {
+  const d = state.difficulty;
+  if (d === 'mix') {
+    const keys = Object.keys(RANGES);
+    const r = RANGES[keys[Math.floor(Math.random() * keys.length)]];
+    return randInRange(r[0], r[1]);
+  }
+  return randInRange(RANGES[d][0], RANGES[d][1]);
+}
+
+// Wrong options: slightly different numbers
+function wrongNumbers(correct, count) {
+  const set = new Set([correct]);
+  const [min, max] = state.difficulty === 'mix' ? [1, 999999] : RANGES[state.difficulty];
+  while (set.size < count + 1) {
+    // Mutate one digit
+    let n = correct;
+    const digits = String(correct).split('');
+    const i = Math.floor(Math.random() * digits.length);
+    let d = parseInt(digits[i]);
+    let nd = d;
+    while (nd === d) nd = Math.floor(Math.random() * 10);
+    if (i === 0 && nd === 0) nd = 1;
+    digits[i] = nd;
+    n = parseInt(digits.join(''));
+    if (n >= min && n <= max && n !== correct) set.add(n);
+  }
+  set.delete(correct);
+  return [...set].slice(0, count);
+}
+
+// ── State ────────────────────────────────────────────────────
+const state = {
+  difficulty: '1',
+  direction: 'n2k',
+  total: 0,
+  correct: 0,
+  streak: 0,
+  maxStreak: 0,
+  answered: false,
+  currentNum: 0,
+  currentDir: 'n2k',
+  sessionCorrects: 0,
+};
+
+// ── UI chips ─────────────────────────────────────────────────
+document.getElementById('difficulty-chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#difficulty-chips .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  state.difficulty = chip.dataset.val;
+  nextQuestion();
+});
+
+document.getElementById('direction-chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#direction-chips .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  state.direction = chip.dataset.val;
+  nextQuestion();
+});
+
+// ── Render question ──────────────────────────────────────────
+function nextQuestion() {
+  state.answered = false;
+  state.currentNum = pickDifficulty();
+  state.currentDir = state.direction === 'mix'
+    ? (Math.random() < 0.5 ? 'n2k' : 'k2n')
+    : state.direction;
+
+  const num = state.currentNum;
+  const kaz = toKazakh(num);
+  const dir = state.currentDir;
+
+  // Badge
+  document.getElementById('dir-badge').textContent =
+    dir === 'n2k' ? 'Цифра → Казахский' : 'Казахский → Цифра';
+
+  // Question display
+  const qDisplay = document.getElementById('question-display');
+  if (dir === 'n2k') {
+    qDisplay.innerHTML = `<div class="question-number">${formatNum(num)}</div>`;
+    document.getElementById('question-sub').textContent = 'Выбери правильный перевод:';
+  } else {
+    qDisplay.innerHTML = `<div class="question-kazakh">${kaz}</div>`;
+    document.getElementById('question-sub').textContent = 'Какое это число?';
+  }
+
+  // Generate options
+  const wrongs = wrongNumbers(num, 3);
+  const all = [num, ...wrongs].sort(() => Math.random() - 0.5);
+
+  const container = document.getElementById('options');
+  container.innerHTML = '';
+
+  all.forEach(n => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = dir === 'n2k' ? toKazakh(n) : formatNum(n);
+    btn.onclick = () => handleAnswer(n === num, btn, container, num);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('next-btn').style.display = 'none';
+
+  updateStats();
+}
+
+function handleAnswer(isCorrect, btn, container, num) {
+  if (state.answered) return;
+  state.answered = true;
+  state.total++;
+
+  const buttons = container.querySelectorAll('.opt-btn');
+  buttons.forEach(b => {
+    b.disabled = true;
+    const bVal = state.currentDir === 'n2k' ? toKazakh(num) : formatNum(num);
+    if (b.textContent === bVal) b.classList.add('correct');
+  });
+
+  if (isCorrect) {
+    state.correct++;
+    state.streak++;
+    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+  } else {
+    btn.classList.add('wrong');
+    state.streak = 0;
+  }
+
+  // Feedback
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'block';
+  const bd = breakdown(num);
+  if (isCorrect) {
+    fb.className = 'feedback correct';
+    fb.innerHTML = `✓ Правильно! <strong>${formatNum(num)} = ${toKazakh(num)}</strong>`
+      + (bd ? `<div class="breakdown">${bd}</div>` : '');
+  } else {
+    fb.className = 'feedback wrong';
+    fb.innerHTML = `✗ Неверно. Правильно: <strong>${formatNum(num)} = ${toKazakh(num)}</strong>`
+      + (bd ? `<div class="breakdown">${bd}</div>` : '');
+  }
+
+  document.getElementById('next-btn').style.display = 'block';
+  updateStats();
+  updateProgress();
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = state.total;
+  document.getElementById('stat-correct').textContent = state.correct;
+  document.getElementById('stat-streak').textContent = state.streak;
+  document.getElementById('stat-pct').textContent =
+    state.total > 0 ? Math.round(state.correct / state.total * 100) + '%' : '—';
+}
+
+function updateProgress() {
+  const pct = state.total > 0 ? Math.min(state.correct / state.total * 100, 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// Start
+nextQuestion();
+</script>
+</body>
+</html>
