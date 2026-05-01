@@ -1,11 +1,11 @@
 {
   "learner": "RatushnenkoV",
   "started": "2026-04-27",
-  "total_sessions": 1,
-  "total_words_learned": 8,
-  "total_exercises": 5,
-  "total_correct": 5,
-  "topics_covered": ["Базовые приветствия"],
+  "total_sessions": 3,
+  "total_words_learned": 16,
+  "total_exercises": 22,
+  "total_correct": 19,
+  "topics_covered": ["Базовые приветствия", "Суффиксы притяжательные", "Порядок слов", "Суффикс места -да/-та"],
   "sessions": [
     {
       "session": 1,
@@ -14,6 +14,23 @@
       "score": 5,
       "total": 5,
       "percentage": 100
+    },
+    {
+      "session": 2,
+      "date": "2026-05-01",
+      "topic": "Знакомство — логика суффиксов",
+      "score": 3,
+      "total": 3,
+      "percentage": 100
+    },
+    {
+      "session": 3,
+      "date": "2026-05-01",
+      "topic": "Интерактивный квиз (уроки 1–2)",
+      "score": 12,
+      "total": 12,
+      "percentage": 100,
+      "note": "Пройден с 4-й попытки"
     }
   ]
 }
