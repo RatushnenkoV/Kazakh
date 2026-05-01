@@ -1,11 +1,11 @@
 {
   "learner": "RatushnenkoV",
   "started": "2026-04-27",
-  "total_sessions": 3,
+  "total_sessions": 4,
   "total_words_learned": 16,
-  "total_exercises": 22,
-  "total_correct": 19,
-  "topics_covered": ["Базовые приветствия", "Суффиксы притяжательные", "Порядок слов", "Суффикс места -да/-та"],
+  "total_exercises": 66,
+  "total_correct": 60,
+  "topics_covered": ["Базовые приветствия", "Суффиксы притяжательные", "Порядок слов", "Суффикс места -да/-та", "Числа 1–9"],
   "sessions": [
     {
       "session": 1,
@@ -31,6 +31,15 @@
       "total": 12,
       "percentage": 100,
       "note": "Пройден с 4-й попытки"
+    },
+    {
+      "session": 4,
+      "date": "2026-05-01",
+      "topic": "Числа 1–9 (тренажёр)",
+      "score": 41,
+      "total": 44,
+      "percentage": 93,
+      "best_streak": 39
     }
   ]
 }
