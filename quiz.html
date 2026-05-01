@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Казахский язык — Тест</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #475569;
+      font-size: 0.85rem;
+      margin-bottom: 32px;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      background: #1e293b;
+      border-radius: 99px;
+      height: 6px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    /* Card */
+    .card {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid #334155;
+    }
+
+    .topic-badge {
+      display: inline-block;
+      background: #1d4ed8;
+      color: #bfdbfe;
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .question {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .hint {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 28px;
+    }
+
+    /* Options */
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option-btn {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 14px 20px;
+      text-align: left;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: #3b82f6;
+      background: #1e3a5f;
+      transform: translateY(-1px);
+    }
+
+    .option-letter {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    .option-btn.correct {
+      border-color: #22c55e;
+      background: #052e16;
+      color: #86efac;
+    }
+
+    .option-btn.correct .option-letter {
+      background: #22c55e;
+      color: #052e16;
+    }
+
+    .option-btn.wrong {
+      border-color: #ef4444;
+      background: #2d0707;
+      color: #fca5a5;
+    }
+
+    .option-btn.wrong .option-letter {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .option-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    /* Explanation */
+    .explanation {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .explanation.correct {
+      background: #052e16;
+      border: 1px solid #166534;
+      color: #86efac;
+    }
+
+    .explanation.wrong {
+      background: #2d0707;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .explanation .correct-answer {
+      font-weight: 700;
+      color: #4ade80;
+    }
+
+    /* Next button */
+    .next-btn {
+      display: none;
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    /* Result screen */
+    .result {
+      display: none;
+      text-align: center;
+    }
+
+    .result-emoji {
+      font-size: 4rem;
+      margin-bottom: 16px;
+    }
+
+    .result-score {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+    }
+
+    .result-label {
+      color: #64748b;
+      margin-bottom: 32px;
+    }
+
+    .result-breakdown {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    .result-row:last-child { border-bottom: none; }
+
+    .result-row .mark { font-weight: 600; }
+    .result-row .mark.ok { color: #4ade80; }
+    .result-row .mark.fail { color: #f87171; }
+
+    .restart-btn {
+      width: 100%;
+      padding: 14px;
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .restart-btn:hover { border-color: #3b82f6; }
+
+    /* Quiz screen */
+    #quiz-screen { display: block; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Казахский язык</h1>
+  <p class="subtitle">Урок 1–2 · Приветствия и знакомство</p>
+
+  <!-- Quiz screen -->
+  <div id="quiz-screen">
+    <div class="progress-label">
+      <span id="q-counter">Вопрос 1 из 12</span>
+      <span id="q-score">0 правильных</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+
+    <div class="card">
+      <div class="topic-badge" id="topic-badge">Тема</div>
+      <div class="question" id="question-text">Вопрос</div>
+      <div class="hint" id="hint-text"></div>
+      <div class="options" id="options"></div>
+      <div class="explanation" id="explanation"></div>
+      <button class="next-btn" id="next-btn">Следующий вопрос →</button>
+    </div>
+  </div>
+
+  <!-- Result screen -->
+  <div class="result card" id="result-screen">
+    <div class="result-emoji" id="result-emoji">🎉</div>
+    <div class="result-score" id="result-score">0/12</div>
+    <div class="result-label" id="result-label">Результат</div>
+    <div class="result-breakdown" id="result-breakdown"></div>
+    <button class="restart-btn" onclick="restart()">Пройти ещё раз</button>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      topic: "Приветствия",
+      question: "Как будет «Привет»?",
+      hint: "Неформальное приветствие",
+      options: ["Сәлем", "Рахмет", "Жақсы", "Жоқ"],
+      correct: 0,
+      explanation: "<strong>Сәлем</strong> — привет (неформально). Обрати внимание на букву <strong>Ә</strong> — она мягче обычной А."
+    },
+    {
+      topic: "Приветствия",
+      question: "Что значит «Рахмет»?",
+      hint: "",
+      options: ["Хорошо", "Пожалуйста", "Спасибо", "Привет"],
+      correct: 2,
+      explanation: "<strong>Рахмет</strong> — спасибо. Одно из самых важных слов!"
+    },
+    {
+      topic: "Приветствия",
+      question: "Как будет «Нет»?",
+      hint: "",
+      options: ["Иә", "Жоқ", "Жақсы", "Сәлем"],
+      correct: 1,
+      explanation: "<strong>Жоқ</strong> — нет. А <strong>Иә</strong> — да."
+    },
+    {
+      topic: "Приветствия",
+      question: "Что значит «Жақсы»?",
+      hint: "Ответ на вопрос «Как дела?»",
+      options: ["Спасибо", "Привет", "До свидания", "Хорошо"],
+      correct: 3,
+      explanation: "<strong>Жақсы</strong> — хорошо. Часто используется как ответ на «Қалайсың?» (Как дела?)."
+    },
+    {
+      topic: "Приветствия",
+      question: "Как спросить «Как дела?» (неформально)?",
+      hint: "",
+      options: ["Сәлеметсіз бе?", "Қалайсың?", "Атың кім?", "Қайдансыз?"],
+      correct: 1,
+      explanation: "<strong>Қалайсың?</strong> — как дела? (неформально, к другу). <strong>Қалайсыз?</strong> — формальная версия."
+    },
+    {
+      topic: "Суффиксы",
+      question: "Что значит суффикс «-ым» в слове «атым»?",
+      hint: "ат = имя",
+      options: ["твоё", "его", "моё", "наше"],
+      correct: 2,
+      explanation: "<strong>-ым</strong> = моё (1-е лицо). Ат<strong>ым</strong> = моё имя."
+    },
+    {
+      topic: "Суффиксы",
+      question: "Как будет «твоё имя»?",
+      hint: "ат = имя, используй нужный суффикс",
+      options: ["атым", "атың", "аты", "атыз"],
+      correct: 1,
+      explanation: "<strong>атың</strong> = твоё имя. Суффикс <strong>-ың</strong> обозначает принадлежность 2-му лицу (ты)."
+    },
+    {
+      topic: "Знакомство",
+      question: "Как сказать «Меня зовут Асан»?",
+      hint: "Буквально: «Моё имя Асан»",
+      options: ["Атың Асан", "Менің атым Асан", "Мен Асан тұрамын", "Аты Асан"],
+      correct: 1,
+      explanation: "<strong>Менің атым Асан</strong> — буквально «моё имя Асан». Менің = мой, атым = моё имя."
+    },
+    {
+      topic: "Знакомство",
+      question: "Как спросить «Как тебя зовут?» (неформально)?",
+      hint: "Буквально: «Твоё имя кто?»",
+      options: ["Менің атым кім?", "Сіздің атыңыз кім?", "Атың кім?", "Ол кім?"],
+      correct: 2,
+      explanation: "<strong>Атың кім?</strong> — как тебя зовут? Атың = твоё имя, кім = кто."
+    },
+    {
+      topic: "Порядок слов",
+      question: "Где стоит глагол в казахском предложении?",
+      hint: "Мен Алматыда тұрамын",
+      options: ["В начале", "В середине", "В конце", "Где угодно"],
+      correct: 2,
+      explanation: "Глагол всегда <strong>в конце</strong>. Порядок: Кто → Где/Что → <strong>Глагол</strong>. Например: Мен Алматыда <strong>тұрамын</strong>."
+    },
+    {
+      topic: "Суффикс места",
+      question: "Как будет «в Астане»?",
+      hint: "Суффикс -да/-та означает «в»",
+      options: ["Астана", "Астанада", "Астананы", "Астанаға"],
+      correct: 1,
+      explanation: "<strong>Астанада</strong> = в Астане. Астана + <strong>-да</strong> (суффикс места). После гласных и звонких согласных — -да, после глухих (к, п, т) — -та."
+    },
+    {
+      topic: "Суффикс места",
+      question: "Как будет «в Москве»? (Мәскеу = Москва)",
+      hint: "Мәскеу оканчивается на гласную «у»",
+      options: ["Мәскеута", "Мәскеуда", "Мәскеуде", "Мәскеуна"],
+      correct: 1,
+      explanation: "<strong>Мәскеуда</strong> = в Москве. Слово заканчивается на гласную, поэтому суффикс <strong>-да</strong> (не -та)."
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  let answered = false;
+  let results = [];
+
+  function shuffle(arr) {
+    return [...arr].sort(() => Math.random() - 0.5);
+  }
+
+  // Shuffle questions on load
+  const shuffled = shuffle(questions);
+
+  function render() {
+    const q = shuffled[current];
+    answered = false;
+
+    document.getElementById('topic-badge').textContent = q.topic;
+    document.getElementById('question-text').textContent = q.question;
+    document.getElementById('hint-text').textContent = q.hint;
+    document.getElementById('q-counter').textContent = `Вопрос ${current + 1} из ${shuffled.length}`;
+    document.getElementById('q-score').textContent = `${score} правильных`;
+    document.getElementById('progress-fill').style.width = `${(current / shuffled.length) * 100}%`;
+
+    const explanation = document.getElementById('explanation');
+    explanation.style.display = 'none';
+    explanation.className = 'explanation';
+
+    document.getElementById('next-btn').style.display = 'none';
+
+    // Build shuffled options
+    const optionLetters = ['А', 'Б', 'В', 'Г'];
+    const indices = [0, 1, 2, 3];
+    const shuffledIndices = shuffle(indices);
+    const correctShuffledPos = shuffledIndices.indexOf(q.correct);
+
+    const container = document.getElementById('options');
+    container.innerHTML = '';
+
+    shuffledIndices.forEach((origIdx, pos) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<span class="option-letter">${optionLetters[pos]}</span>${q.options[origIdx]}`;
+      btn.onclick = () => answer(pos, correctShuffledPos, q.explanation, btn, container);
+      container.appendChild(btn);
+    });
+  }
+
+  function answer(chosen, correctPos, explanation, btn, container) {
+    if (answered) return;
+    answered = true;
+
+    const buttons = container.querySelectorAll('.option-btn');
+    buttons.forEach(b => b.disabled = true);
+
+    const isCorrect = chosen === correctPos;
+    if (isCorrect) {
+      btn.classList.add('correct');
+      score++;
+    } else {
+      btn.classList.add('wrong');
+      buttons[correctPos].classList.add('correct');
+    }
+
+    results.push({ question: shuffled[current].question, correct: isCorrect });
+
+    const exp = document.getElementById('explanation');
+    exp.style.display = 'block';
+    exp.className = `explanation ${isCorrect ? 'correct' : 'wrong'}`;
+    exp.innerHTML = (isCorrect ? '✓ Правильно! ' : '✗ Неверно. ') + explanation;
+
+    document.getElementById('q-score').textContent = `${score} правильных`;
+
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.style.display = 'block';
+    nextBtn.textContent = current + 1 < shuffled.length ? 'Следующий вопрос →' : 'Посмотреть результат →';
+  }
+
+  document.getElementById('next-btn').onclick = () => {
+    current++;
+    if (current < shuffled.length) {
+      render();
+    } else {
+      showResult();
+    }
+  };
+
+  function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    const result = document.getElementById('result-screen');
+    result.style.display = 'block';
+
+    const pct = Math.round((score / shuffled.length) * 100);
+    let emoji = pct === 100 ? '🏆' : pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '💪';
+    let label = pct === 100 ? 'Идеально!' : pct >= 80 ? 'Отлично!' : pct >= 60 ? 'Хороший результат' : 'Продолжай практиковаться!';
+
+    document.getElementById('result-emoji').textContent = emoji;
+    document.getElementById('result-score').textContent = `${score}/${shuffled.length}`;
+    document.getElementById('result-label').textContent = `${pct}% — ${label}`;
+
+    const breakdown = document.getElementById('result-breakdown');
+    breakdown.innerHTML = results.map((r, i) =>
+      `<div class="result-row">
+        <span>${i + 1}. ${r.question}</span>
+        <span class="mark ${r.correct ? 'ok' : 'fail'}">${r.correct ? '✓' : '✗'}</span>
+      </div>`
+    ).join('');
+  }
+
+  function restart() {
+    current = 0;
+    score = 0;
+    answered = false;
+    results = [];
+    shuffled.sort(() => Math.random() - 0.5);
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>
