@@ -155,7 +155,39 @@
     }
     .feedback.correct { background: #052e16; border: 1px solid #166534; color: #86efac; }
     .feedback.wrong   { background: #2d0707; border: 1px solid #7f1d1d; color: #fca5a5; }
-    .feedback .breakdown { margin-top: 6px; font-size: 0.8rem; color: #64748b; font-family: monospace; }
+    .feedback .breakdown { margin-top: 6px; font-size: 0.8rem; color: #64748b; font-family: monospace; white-space: pre; }
+
+    /* Input mode */
+    .input-wrap { display: none; margin-bottom: 0; }
+    .text-input {
+      width: 100%;
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 14px;
+      color: #e2e8f0;
+      font-size: 1.1rem;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    .text-input:focus { border-color: #3b82f6; }
+    .text-input.correct { border-color: #22c55e; background: #052e16; color: #86efac; }
+    .text-input.wrong   { border-color: #ef4444; background: #2d0707; color: #fca5a5; }
+    .submit-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 13px;
+      background: #1e293b;
+      border: 2px solid #3b82f6;
+      border-radius: 12px;
+      color: #3b82f6;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .submit-btn:hover { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
 
     /* Next */
     .next-btn {
@@ -286,6 +318,13 @@
       <div class="chip" data-val="mix">Оба</div>
     </div>
   </div>
+  <div class="settings-row">
+    <div class="settings-label">Режим</div>
+    <div class="chips" id="mode-chips">
+      <div class="chip active" data-val="choice">Выбор вариантов</div>
+      <div class="chip" data-val="input">Вводить текст</div>
+    </div>
+  </div>
 </div>
 
 <!-- Stats -->
@@ -320,6 +359,10 @@
     <div id="question-display"></div>
     <div class="question-sub" id="question-sub"></div>
     <div class="options" id="options"></div>
+    <div class="input-wrap" id="input-wrap">
+      <input class="text-input" id="text-input" type="text" placeholder="Введи ответ..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="submit-btn" id="submit-btn" onclick="submitInput()">Проверить →</button>
+    </div>
     <div class="feedback" id="feedback"></div>
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">Следующий →</button>
   </div>
@@ -441,6 +484,7 @@ function wrongNumbers(correct, count) {
 const state = {
   difficulty: '1',
   direction: 'n2k',
+  mode: 'choice',
   total: 0,
   correct: 0,
   streak: 0,
@@ -452,6 +496,15 @@ const state = {
 };
 
 // ── UI chips ─────────────────────────────────────────────────
+document.getElementById('mode-chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#mode-chips .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  state.mode = chip.dataset.val;
+  nextQuestion();
+});
+
 document.getElementById('difficulty-chips').addEventListener('click', e => {
   const chip = e.target.closest('.chip');
   if (!chip) return;
@@ -488,28 +541,44 @@ function nextQuestion() {
 
   // Question display
   const qDisplay = document.getElementById('question-display');
+  const isInput = state.mode === 'input';
   if (dir === 'n2k') {
     qDisplay.innerHTML = `<div class="question-number">${formatNum(num)}</div>`;
-    document.getElementById('question-sub').textContent = 'Выбери правильный перевод:';
+    document.getElementById('question-sub').textContent = isInput ? 'Напиши по-казахски:' : 'Выбери правильный перевод:';
   } else {
     qDisplay.innerHTML = `<div class="question-kazakh">${kaz}</div>`;
-    document.getElementById('question-sub').textContent = 'Какое это число?';
+    document.getElementById('question-sub').textContent = isInput ? 'Введи число цифрами:' : 'Какое это число?';
   }
 
-  // Generate options
-  const wrongs = wrongNumbers(num, 3);
-  const all = [num, ...wrongs].sort(() => Math.random() - 0.5);
-
   const container = document.getElementById('options');
-  container.innerHTML = '';
+  const inputWrap = document.getElementById('input-wrap');
+  const textInput = document.getElementById('text-input');
 
-  all.forEach(n => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.textContent = dir === 'n2k' ? toKazakh(n) : formatNum(n);
-    btn.onclick = () => handleAnswer(n === num, btn, container, num);
-    container.appendChild(btn);
-  });
+  if (isInput) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    inputWrap.style.display = 'block';
+    textInput.value = '';
+    textInput.className = 'text-input';
+    textInput.disabled = false;
+    textInput.type = dir === 'k2n' ? 'number' : 'text';
+    textInput.placeholder = dir === 'k2n' ? 'Введи число...' : 'Напиши по-казахски...';
+    document.getElementById('submit-btn').style.display = 'block';
+    setTimeout(() => textInput.focus(), 50);
+  } else {
+    container.style.display = 'grid';
+    inputWrap.style.display = 'none';
+    container.innerHTML = '';
+    const wrongs = wrongNumbers(num, 3);
+    const all = [num, ...wrongs].sort(() => Math.random() - 0.5);
+    all.forEach(n => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.textContent = dir === 'n2k' ? toKazakh(n) : formatNum(n);
+      btn.onclick = () => handleAnswer(n === num, btn, container, num);
+      container.appendChild(btn);
+    });
+  }
 
   document.getElementById('feedback').style.display = 'none';
   document.getElementById('feedback').className = 'feedback';
@@ -570,6 +639,66 @@ function updateProgress() {
   const pct = state.total > 0 ? Math.min(state.correct / state.total * 100, 100) : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
 }
+
+function normalize(s) {
+  return s.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function submitInput() {
+  if (state.answered) return;
+  const textInput = document.getElementById('text-input');
+  const raw = textInput.value.trim();
+  if (!raw) return;
+
+  const num = state.currentNum;
+  const dir = state.currentDir;
+  let isCorrect;
+  let correctDisplay;
+
+  if (dir === 'n2k') {
+    correctDisplay = toKazakh(num);
+    isCorrect = normalize(raw) === normalize(correctDisplay);
+  } else {
+    const entered = parseInt(raw.replace(/\s/g, ''));
+    isCorrect = entered === num;
+    correctDisplay = formatNum(num);
+  }
+
+  state.answered = true;
+  state.total++;
+  textInput.disabled = true;
+  document.getElementById('submit-btn').style.display = 'none';
+
+  if (isCorrect) {
+    textInput.className = 'text-input correct';
+    state.correct++;
+    state.streak++;
+    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+  } else {
+    textInput.className = 'text-input wrong';
+    state.streak = 0;
+  }
+
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'block';
+  const bd = breakdown(num);
+  fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = (isCorrect ? '✓ Правильно! ' : `✗ Неверно. Правильно: `) +
+    `<strong>${formatNum(num)} = ${toKazakh(num)}</strong>` +
+    (bd ? `<div class="breakdown">${bd}</div>` : '');
+
+  document.getElementById('next-btn').style.display = 'block';
+  updateStats();
+  const pct = state.total > 0 ? Math.min(state.correct / state.total * 100, 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+document.getElementById('text-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (state.answered) nextQuestion();
+    else submitInput();
+  }
+});
 
 function showResult() {
   if (state.total === 0) return;
