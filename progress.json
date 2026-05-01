@@ -1,10 +1,10 @@
 {
   "learner": "RatushnenkoV",
   "started": "2026-04-27",
-  "total_sessions": 4,
+  "total_sessions": 5,
   "total_words_learned": 16,
-  "total_exercises": 66,
-  "total_correct": 60,
+  "total_exercises": 104,
+  "total_correct": 97,
   "topics_covered": ["Базовые приветствия", "Суффиксы притяжательные", "Порядок слов", "Суффикс места -да/-та", "Числа 1–9"],
   "sessions": [
     {
@@ -40,6 +40,15 @@
       "total": 44,
       "percentage": 93,
       "best_streak": 39
+    },
+    {
+      "session": 5,
+      "date": "2026-05-01",
+      "topic": "Числа 1–9 — обратный перевод",
+      "score": 37,
+      "total": 38,
+      "percentage": 97,
+      "best_streak": 28
     }
   ]
 }
