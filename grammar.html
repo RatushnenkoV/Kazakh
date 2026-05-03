@@ -55,7 +55,6 @@
     .finish-btn { display: block; width: 100%; max-width: 640px; margin-top: 12px; padding: 12px; background: transparent; border: 2px solid #334155; border-radius: 12px; color: #64748b; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
     .finish-btn:hover { border-color: #ef4444; color: #f87171; }
 
-    /* Result */
     .result-screen { display: none; width: 100%; max-width: 640px; }
     .result-card { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 32px 24px; text-align: center; }
     .result-emoji { font-size: 3.5rem; margin-bottom: 12px; }
@@ -135,8 +134,6 @@
 </div>
 
 <script>
-// ── Данные ───────────────────────────────────────────────────
-
 const PRONOUNS = [
   { kaz: 'мен',    rus: 'я',              note: 'Личное местоимение 1-го лица ед.ч.' },
   { kaz: 'сен',    rus: 'ты',             note: 'Неформальное обращение' },
@@ -160,18 +157,50 @@ const POSSESSIVE = [
 ];
 
 const VERBS = [
-  { kaz: 'барамын',  rus: 'я иду',         note: 'бар- + амын\nбарамын = я иду/пойду' },
-  { kaz: 'барасың',  rus: 'ты идёшь',      note: 'бар- + асың' },
-  { kaz: 'барасыз',  rus: 'вы идёте',      note: 'бар- + асыз (формально)' },
-  { kaz: 'барады',   rus: 'он/она идёт',   note: 'бар- + ады' },
-  { kaz: 'барамыз',  rus: 'мы идём',       note: 'бар- + амыз' },
-  { kaz: 'келемін',  rus: 'я прихожу',     note: 'кел- + емін\nкелу = приходить, светлая гласная → -емін' },
-  { kaz: 'келесің',  rus: 'ты приходишь',  note: 'кел- + есің' },
-  { kaz: 'келеді',   rus: 'он/она приходит', note: 'кел- + еді' },
-  { kaz: 'білемін',  rus: 'я знаю',        note: 'біл- + емін\nбілу = знать' },
-  { kaz: 'білесің',  rus: 'ты знаешь',     note: 'біл- + есің' },
-  { kaz: 'білесіз',  rus: 'вы знаете',     note: 'біл- + есіз' },
-  { kaz: 'біледі',   rus: 'он/она знает',  note: 'біл- + еді' },
+  { kaz: 'барамын',    rus: 'я иду',           note: 'бару → бар- + амын\nтёмная а → окончания на а' },
+  { kaz: 'барасың',    rus: 'ты идёшь',        note: 'бар- + асың' },
+  { kaz: 'барасыз',    rus: 'вы идёте',        note: 'бар- + асыз (формально)' },
+  { kaz: 'барады',     rus: 'он/она идёт',     note: 'бар- + ады' },
+  { kaz: 'барамыз',    rus: 'мы идём',         note: 'бар- + амыз' },
+  { kaz: 'келемін',    rus: 'я прихожу',       note: 'келу → кел- + емін\nсветлая е → окончания на е' },
+  { kaz: 'келесің',    rus: 'ты приходишь',    note: 'кел- + есің' },
+  { kaz: 'келесіз',    rus: 'вы приходите',    note: 'кел- + есіз' },
+  { kaz: 'келеді',     rus: 'он/она приходит', note: 'кел- + еді' },
+  { kaz: 'келеміз',    rus: 'мы приходим',     note: 'кел- + еміз' },
+  { kaz: 'білемін',    rus: 'я знаю',          note: 'білу → біл- + емін' },
+  { kaz: 'білесің',    rus: 'ты знаешь',       note: 'біл- + есің' },
+  { kaz: 'білесіз',    rus: 'вы знаете',       note: 'біл- + есіз' },
+  { kaz: 'біледі',     rus: 'он/она знает',    note: 'біл- + еді' },
+  { kaz: 'жазамын',    rus: 'я пишу',          note: 'жазу → жаз- + амын\nжазу = писать' },
+  { kaz: 'жазасың',    rus: 'ты пишешь',       note: 'жаз- + асың' },
+  { kaz: 'жазады',     rus: 'он/она пишет',    note: 'жаз- + ады' },
+  { kaz: 'аламын',     rus: 'я беру',          note: 'алу → ал- + амын\nалу = брать/получать' },
+  { kaz: 'аласың',     rus: 'ты берёшь',       note: 'ал- + асың' },
+  { kaz: 'алады',      rus: 'он/она берёт',    note: 'ал- + ады' },
+  { kaz: 'айтамын',    rus: 'я говорю',        note: 'айту → айт- + амын\nайту = говорить/сказать' },
+  { kaz: 'айтасың',    rus: 'ты говоришь',     note: 'айт- + асың' },
+  { kaz: 'айтады',     rus: 'он/она говорит',  note: 'айт- + ады' },
+  { kaz: 'боламын',    rus: 'я буду',          note: 'болу → бол- + амын\nболу = быть' },
+  { kaz: 'боласың',    rus: 'ты будешь',       note: 'бол- + асың' },
+  { kaz: 'болады',     rus: 'он/она будет',    note: 'бол- + ады' },
+  { kaz: 'беремін',    rus: 'я даю',           note: 'беру → бер- + емін\nберу = давать' },
+  { kaz: 'бересің',    rus: 'ты даёшь',        note: 'бер- + есің' },
+  { kaz: 'береді',     rus: 'он/она даёт',     note: 'бер- + еді' },
+  { kaz: 'көремін',    rus: 'я вижу',          note: 'көру → көр- + емін\nкөру = видеть' },
+  { kaz: 'көресің',    rus: 'ты видишь',       note: 'көр- + есің' },
+  { kaz: 'көреді',     rus: 'он/она видит',    note: 'көр- + еді' },
+  { kaz: 'ішемін',     rus: 'я пью',           note: 'ішу → іш- + емін\nішу = пить' },
+  { kaz: 'ішесің',     rus: 'ты пьёшь',        note: 'іш- + есің' },
+  { kaz: 'ішеді',      rus: 'он/она пьёт',     note: 'іш- + еді' },
+  { kaz: 'жасаймын',   rus: 'я делаю',         note: 'жасау → жаса- + ймын\nкорень на гласную → вставляем й' },
+  { kaz: 'жасайсың',   rus: 'ты делаешь',      note: 'жаса- + йсың' },
+  { kaz: 'жасайды',    rus: 'он/она делает',   note: 'жаса- + йды' },
+  { kaz: 'жеймін',     rus: 'я ем',            note: 'жеу → же- + ймін\nжеу = есть/кушать' },
+  { kaz: 'жейсің',     rus: 'ты ешь',          note: 'же- + йсің' },
+  { kaz: 'жейді',      rus: 'он/она ест',      note: 'же- + йді' },
+  { kaz: 'оқимын',     rus: 'я читаю',         note: 'оқу → оқы- + мын\nоқу = читать/учиться' },
+  { kaz: 'оқисың',     rus: 'ты читаешь',      note: 'оқы- + сың' },
+  { kaz: 'оқиды',      rus: 'он/она читает',   note: 'оқы- + ды' },
 ];
 
 const TOPIC_LABELS = {
@@ -181,7 +210,6 @@ const TOPIC_LABELS = {
   mix:        'Микс',
 };
 
-// ── State ────────────────────────────────────────────────────
 const state = {
   topic: 'pronouns',
   direction: 'kaz2rus',
@@ -192,7 +220,6 @@ const state = {
   currentDir: 'kaz2rus',
 };
 
-// ── Chips ────────────────────────────────────────────────────
 document.getElementById('topic-chips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
   document.querySelectorAll('#topic-chips .chip').forEach(x => x.classList.remove('active'));
@@ -204,7 +231,6 @@ document.getElementById('dir-chips').addEventListener('click', e => {
   c.classList.add('active'); state.direction = c.dataset.val; render();
 });
 
-// ── Pick pool ─────────────────────────────────────────────────
 function pool() {
   const t = state.topic;
   if (t === 'pronouns')   return PRONOUNS;
@@ -219,7 +245,6 @@ function topicOf(item) {
   return 'Спряжение';
 }
 
-// ── Render ────────────────────────────────────────────────────
 function render() {
   state.answered = false;
   const p = pool();
