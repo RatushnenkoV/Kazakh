@@ -1,63 +1,18 @@
 {
   "learner": "RatushnenkoV",
   "started": "2026-04-27",
-  "total_sessions": 6,
+  "total_sessions": 7,
   "total_words_learned": 16,
-  "total_exercises": 138,
-  "total_correct": 130,
-  "topics_covered": ["Базовые приветствия", "Суффиксы притяжательные", "Порядок слов", "Суффикс места -да/-та", "Числа 1–9"],
+  "total_exercises": 171,
+  "total_correct": 160,
+  "topics_covered": ["Базовые приветствия", "Суффиксы притяжательные", "Порядок слов", "Суффикс места -да/-та", "Числа 1–9", "Числа 10–99"],
   "sessions": [
-    {
-      "session": 1,
-      "date": "2026-04-27",
-      "topic": "Базовые приветствия",
-      "score": 5,
-      "total": 5,
-      "percentage": 100
-    },
-    {
-      "session": 2,
-      "date": "2026-05-01",
-      "topic": "Знакомство — логика суффиксов",
-      "score": 3,
-      "total": 3,
-      "percentage": 100
-    },
-    {
-      "session": 3,
-      "date": "2026-05-01",
-      "topic": "Интерактивный квиз (уроки 1–2)",
-      "score": 12,
-      "total": 12,
-      "percentage": 100,
-      "note": "Пройден с 4-й попытки"
-    },
-    {
-      "session": 4,
-      "date": "2026-05-01",
-      "topic": "Числа 1–9 (тренажёр)",
-      "score": 41,
-      "total": 44,
-      "percentage": 93,
-      "best_streak": 39
-    },
-    {
-      "session": 5,
-      "date": "2026-05-01",
-      "topic": "Числа 1–9 — обратный перевод",
-      "score": 37,
-      "total": 38,
-      "percentage": 97,
-      "best_streak": 28
-    },
-    {
-      "session": 6,
-      "date": "2026-05-01",
-      "topic": "Числа 1–9 — оба направления",
-      "score": 33,
-      "total": 34,
-      "percentage": 97,
-      "best_streak": 33
-    }
+    {"session": 1, "date": "2026-04-27", "topic": "Базовые приветствия", "score": 5, "total": 5, "percentage": 100},
+    {"session": 2, "date": "2026-05-01", "topic": "Знакомство — логика суффиксов", "score": 3, "total": 3, "percentage": 100},
+    {"session": 3, "date": "2026-05-01", "topic": "Интерактивный квиз (уроки 1–2)", "score": 12, "total": 12, "percentage": 100, "note": "с 4-й попытки"},
+    {"session": 4, "date": "2026-05-01", "topic": "Числа 1–9 (тренажёр)", "score": 41, "total": 44, "percentage": 93, "best_streak": 39},
+    {"session": 5, "date": "2026-05-01", "topic": "Числа 1–9 — обратный перевод", "score": 37, "total": 38, "percentage": 97, "best_streak": 28},
+    {"session": 6, "date": "2026-05-01", "topic": "Числа 1–9 — оба направления", "score": 33, "total": 34, "percentage": 97, "best_streak": 33},
+    {"session": 7, "date": "2026-05-03", "topic": "Числа 10–99 — ввод текста, оба направления", "score": 30, "total": 33, "percentage": 91, "best_streak": 21}
   ]
 }
