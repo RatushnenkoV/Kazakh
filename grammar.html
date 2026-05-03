@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Казахская грамматика — тренажёр</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
+    h1 { font-size: 1.2rem; color: #94a3b8; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+    .subtitle { color: #475569; font-size: 0.8rem; margin-bottom: 24px; }
+
+    .settings { width: 100%; max-width: 640px; margin-bottom: 20px; }
+    .settings-row { margin-bottom: 14px; }
+    .settings-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 7px 14px; border-radius: 99px; border: 2px solid #334155; background: #1e293b; color: #94a3b8; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; user-select: none; }
+    .chip:hover { border-color: #3b82f6; color: #e2e8f0; }
+    .chip.active { border-color: #3b82f6; background: #1d4ed8; color: #fff; }
+
+    .stats { width: 100%; max-width: 640px; display: flex; gap: 10px; margin-bottom: 16px; }
+    .stat { flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 10px; text-align: center; }
+    .stat-value { font-size: 1.4rem; font-weight: 700; color: #f1f5f9; }
+    .stat-label { font-size: 0.65rem; color: #475569; text-transform: uppercase; }
+    .stat.streak .stat-value { color: #f59e0b; }
+    .stat.correct .stat-value { color: #4ade80; }
+
+    .progress-bar { width: 100%; max-width: 640px; height: 4px; background: #1e293b; border-radius: 99px; margin-bottom: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #3b82f6); border-radius: 99px; transition: width 0.3s; }
+
+    .card { width: 100%; max-width: 640px; background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 28px 24px; }
+
+    .topic-badge { display: inline-block; font-size: 0.7rem; padding: 3px 10px; border-radius: 99px; margin-bottom: 16px; letter-spacing: 0.05em; background: #312e81; color: #a5b4fc; }
+
+    .question { font-size: 1.8rem; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; line-height: 1.3; }
+    .question-hint { font-size: 0.8rem; color: #475569; margin-bottom: 24px; min-height: 18px; }
+
+    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 400px) { .options { grid-template-columns: 1fr; } }
+
+    .opt-btn { background: #0f172a; border: 2px solid #334155; border-radius: 14px; color: #e2e8f0; cursor: pointer; padding: 14px 12px; text-align: center; font-size: 1rem; line-height: 1.4; transition: all 0.15s; min-height: 58px; display: flex; align-items: center; justify-content: center; }
+    .opt-btn:hover:not(:disabled) { border-color: #8b5cf6; background: #1e1b4b; transform: translateY(-1px); }
+    .opt-btn.correct { border-color: #22c55e; background: #052e16; color: #86efac; }
+    .opt-btn.wrong { border-color: #ef4444; background: #2d0707; color: #fca5a5; }
+    .opt-btn:disabled { cursor: not-allowed; transform: none; }
+
+    .feedback { margin-top: 16px; padding: 14px 16px; border-radius: 12px; font-size: 0.9rem; line-height: 1.6; display: none; }
+    .feedback.correct { background: #052e16; border: 1px solid #166534; color: #86efac; }
+    .feedback.wrong { background: #2d0707; border: 1px solid #7f1d1d; color: #fca5a5; }
+    .feedback .note { margin-top: 6px; font-size: 0.8rem; color: #64748b; font-family: monospace; white-space: pre-wrap; }
+
+    .next-btn { display: none; width: 100%; margin-top: 14px; padding: 14px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .next-btn:hover { opacity: 0.9; }
+
+    .finish-btn { display: block; width: 100%; max-width: 640px; margin-top: 12px; padding: 12px; background: transparent; border: 2px solid #334155; border-radius: 12px; color: #64748b; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+    .finish-btn:hover { border-color: #ef4444; color: #f87171; }
+
+    /* Result */
+    .result-screen { display: none; width: 100%; max-width: 640px; }
+    .result-card { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 32px 24px; text-align: center; }
+    .result-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+    .result-score { font-size: 2.8rem; font-weight: 800; color: #f1f5f9; margin-bottom: 4px; }
+    .result-label { color: #64748b; margin-bottom: 24px; font-size: 0.9rem; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .result-stat { background: #0f172a; border-radius: 12px; padding: 14px; }
+    .result-stat-val { font-size: 1.4rem; font-weight: 700; color: #f1f5f9; }
+    .result-stat-lbl { font-size: 0.7rem; color: #475569; text-transform: uppercase; }
+    .copy-block { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 16px; text-align: left; font-family: monospace; font-size: 0.85rem; color: #94a3b8; white-space: pre; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
+    .copy-block:hover { border-color: #8b5cf6; }
+    .copy-hint { font-size: 0.75rem; color: #475569; margin-bottom: 16px; }
+    .restart-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h1>Казахская грамматика</h1>
+<p class="subtitle">Местоимения · суффиксы · спряжение</p>
+
+<div class="settings">
+  <div class="settings-row">
+    <div class="settings-label">Тема</div>
+    <div class="chips" id="topic-chips">
+      <div class="chip active" data-val="pronouns">Местоимения</div>
+      <div class="chip" data-val="possessive">Притяжательные суффиксы</div>
+      <div class="chip" data-val="verbs">Спряжение глаголов</div>
+      <div class="chip" data-val="mix">Всё вместе</div>
+    </div>
+  </div>
+  <div class="settings-row">
+    <div class="settings-label">Направление</div>
+    <div class="chips" id="dir-chips">
+      <div class="chip active" data-val="kaz2rus">Казахский → Русский</div>
+      <div class="chip" data-val="rus2kaz">Русский → Казахский</div>
+      <div class="chip" data-val="mix">Оба</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-value" id="s-total">0</div><div class="stat-label">Всего</div></div>
+  <div class="stat correct"><div class="stat-value" id="s-correct">0</div><div class="stat-label">Верно</div></div>
+  <div class="stat streak"><div class="stat-value" id="s-streak">0</div><div class="stat-label">Серия</div></div>
+  <div class="stat"><div class="stat-value" id="s-pct">—</div><div class="stat-label">%</div></div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+<div id="quiz-screen">
+  <div class="card">
+    <div class="topic-badge" id="topic-badge">Тема</div>
+    <div class="question" id="question"></div>
+    <div class="question-hint" id="question-hint"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="next()">Следующий →</button>
+  </div>
+  <button class="finish-btn" onclick="showResult()">Завершить сессию и посмотреть статистику</button>
+</div>
+
+<div class="result-screen" id="result-screen">
+  <div class="result-card">
+    <div class="result-emoji" id="res-emoji">🎉</div>
+    <div class="result-score" id="res-score">0/0</div>
+    <div class="result-label" id="res-label">Результат</div>
+    <div class="result-grid">
+      <div class="result-stat"><div class="result-stat-val" id="res-total">0</div><div class="result-stat-lbl">Всего</div></div>
+      <div class="result-stat"><div class="result-stat-val" id="res-correct" style="color:#4ade80">0</div><div class="result-stat-lbl">Верно</div></div>
+      <div class="result-stat"><div class="result-stat-val" id="res-streak" style="color:#f59e0b">0</div><div class="result-stat-lbl">Лучшая серия</div></div>
+      <div class="result-stat"><div class="result-stat-val" id="res-topic">—</div><div class="result-stat-lbl">Тема</div></div>
+    </div>
+    <div class="copy-block" id="copy-block" onclick="copyStats()"></div>
+    <div class="copy-hint">👆 Нажми — скопируется. Отправь мне, я запишу в базу.</div>
+    <button class="restart-btn" onclick="restart()">Тренироваться ещё</button>
+  </div>
+</div>
+
+<script>
+// ── Данные ───────────────────────────────────────────────────
+
+const PRONOUNS = [
+  { kaz: 'мен',    rus: 'я',              note: 'Личное местоимение 1-го лица ед.ч.' },
+  { kaz: 'сен',    rus: 'ты',             note: 'Неформальное обращение' },
+  { kaz: 'сіз',    rus: 'вы',             note: 'Формальное/вежливое обращение' },
+  { kaz: 'ол',     rus: 'он / она',       note: 'Казахский не различает род' },
+  { kaz: 'біз',    rus: 'мы',             note: '' },
+  { kaz: 'сендер', rus: 'вы (мн.ч.)',     note: 'Неформальное множественное' },
+  { kaz: 'олар',   rus: 'они',            note: '' },
+];
+
+const POSSESSIVE = [
+  { kaz: 'атым',     rus: 'моё имя',       note: 'ат + ым → 1 лицо (мен)\nат = имя, -ым = мой' },
+  { kaz: 'атың',     rus: 'твоё имя',      note: 'ат + ың → 2 лицо (сен)\n-ың = твой' },
+  { kaz: 'атыңыз',   rus: 'ваше имя',      note: 'ат + ыңыз → формальное 2 лицо (сіз)' },
+  { kaz: 'аты',      rus: 'его/её имя',    note: 'ат + ы → 3 лицо (ол)\n-ы = его/её' },
+  { kaz: 'атымыз',   rus: 'наше имя',      note: 'ат + ымыз → 1 лицо мн.ч. (біз)' },
+  { kaz: 'аттары',   rus: 'их имя',        note: 'ат + тары → 3 лицо мн.ч. (олар)' },
+  { kaz: 'үйім',     rus: 'мой дом',       note: 'үй +ім → светлая гласная → -ім (не -ым)\nүй = дом' },
+  { kaz: 'үйің',     rus: 'твой дом',      note: 'үй +ің → светлая гласная → -ің' },
+  { kaz: 'үйі',      rus: 'его/её дом',    note: 'үй + і → светлая гласная → -і' },
+];
+
+const VERBS = [
+  { kaz: 'барамын',  rus: 'я иду',         note: 'бар- + амын\nбарамын = я иду/пойду' },
+  { kaz: 'барасың',  rus: 'ты идёшь',      note: 'бар- + асың' },
+  { kaz: 'барасыз',  rus: 'вы идёте',      note: 'бар- + асыз (формально)' },
+  { kaz: 'барады',   rus: 'он/она идёт',   note: 'бар- + ады' },
+  { kaz: 'барамыз',  rus: 'мы идём',       note: 'бар- + амыз' },
+  { kaz: 'келемін',  rus: 'я прихожу',     note: 'кел- + емін\nкелу = приходить, светлая гласная → -емін' },
+  { kaz: 'келесің',  rus: 'ты приходишь',  note: 'кел- + есің' },
+  { kaz: 'келеді',   rus: 'он/она приходит', note: 'кел- + еді' },
+  { kaz: 'білемін',  rus: 'я знаю',        note: 'біл- + емін\nбілу = знать' },
+  { kaz: 'білесің',  rus: 'ты знаешь',     note: 'біл- + есің' },
+  { kaz: 'білесіз',  rus: 'вы знаете',     note: 'біл- + есіз' },
+  { kaz: 'біледі',   rus: 'он/она знает',  note: 'біл- + еді' },
+];
+
+const TOPIC_LABELS = {
+  pronouns:   'Местоимения',
+  possessive: 'Притяжательные суффиксы',
+  verbs:      'Спряжение',
+  mix:        'Микс',
+};
+
+// ── State ────────────────────────────────────────────────────
+const state = {
+  topic: 'pronouns',
+  direction: 'kaz2rus',
+  total: 0, correct: 0, streak: 0, maxStreak: 0,
+  answered: false,
+  startTime: Date.now(),
+  currentItem: null,
+  currentDir: 'kaz2rus',
+};
+
+// ── Chips ────────────────────────────────────────────────────
+document.getElementById('topic-chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  document.querySelectorAll('#topic-chips .chip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active'); state.topic = c.dataset.val; render();
+});
+document.getElementById('dir-chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  document.querySelectorAll('#dir-chips .chip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active'); state.direction = c.dataset.val; render();
+});
+
+// ── Pick pool ─────────────────────────────────────────────────
+function pool() {
+  const t = state.topic;
+  if (t === 'pronouns')   return PRONOUNS;
+  if (t === 'possessive') return POSSESSIVE;
+  if (t === 'verbs')      return VERBS;
+  return [...PRONOUNS, ...POSSESSIVE, ...VERBS];
+}
+
+function topicOf(item) {
+  if (PRONOUNS.includes(item))   return 'Местоимения';
+  if (POSSESSIVE.includes(item)) return 'Притяжательные';
+  return 'Спряжение';
+}
+
+// ── Render ────────────────────────────────────────────────────
+function render() {
+  state.answered = false;
+  const p = pool();
+  state.currentItem = p[Math.floor(Math.random() * p.length)];
+  state.currentDir = state.direction === 'mix'
+    ? (Math.random() < 0.5 ? 'kaz2rus' : 'rus2kaz')
+    : state.direction;
+
+  const item = state.currentItem;
+  const dir = state.currentDir;
+
+  document.getElementById('topic-badge').textContent = topicOf(item);
+  document.getElementById('question').textContent = dir === 'kaz2rus' ? item.kaz : item.rus;
+  document.getElementById('question-hint').textContent = dir === 'kaz2rus' ? 'Переведи на русский' : 'Переведи на казахский';
+
+  // Wrong options: pick 3 other items from same pool
+  const others = p.filter(x => x !== item);
+  const wrongs = [];
+  const used = new Set();
+  while (wrongs.length < 3 && wrongs.length < others.length) {
+    const idx = Math.floor(Math.random() * others.length);
+    if (!used.has(idx)) { used.add(idx); wrongs.push(others[idx]); }
+  }
+
+  const allItems = [item, ...wrongs].sort(() => Math.random() - 0.5);
+  const container = document.getElementById('options');
+  container.innerHTML = '';
+  allItems.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = dir === 'kaz2rus' ? opt.rus : opt.kaz;
+    const isCorrect = opt === item;
+    btn.onclick = () => handleAnswer(isCorrect, btn, container, item, dir);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+  updateStats();
+}
+
+function handleAnswer(isCorrect, btn, container, item, dir) {
+  if (state.answered) return;
+  state.answered = true;
+  state.total++;
+
+  const correctText = dir === 'kaz2rus' ? item.rus : item.kaz;
+  container.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctText) b.classList.add('correct');
+  });
+
+  if (isCorrect) {
+    state.correct++; state.streak++;
+    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+  } else {
+    btn.classList.add('wrong'); state.streak = 0;
+  }
+
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'block';
+  fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = (isCorrect ? '✓ Правильно! ' : '✗ Неверно. Правильно: ') +
+    `<strong>${item.kaz} = ${item.rus}</strong>` +
+    (item.note ? `<div class="note">${item.note}</div>` : '');
+
+  document.getElementById('next-btn').style.display = 'block';
+  updateStats();
+  const pct = Math.min(state.correct / state.total * 100, 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function next() { render(); }
+
+function updateStats() {
+  document.getElementById('s-total').textContent = state.total;
+  document.getElementById('s-correct').textContent = state.correct;
+  document.getElementById('s-streak').textContent = state.streak;
+  document.getElementById('s-pct').textContent = state.total > 0
+    ? Math.round(state.correct / state.total * 100) + '%' : '—';
+}
+
+function showResult() {
+  if (state.total === 0) return;
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  const pct = Math.round(state.correct / state.total * 100);
+  const emoji = pct === 100 ? '🏆' : pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '💪';
+  const label = pct === 100 ? 'Идеально!' : pct >= 80 ? 'Отлично!' : pct >= 60 ? 'Хороший результат' : 'Продолжай практиковаться!';
+  const mins = Math.max(1, Math.round((Date.now() - state.startTime) / 60000));
+  const topicLabel = TOPIC_LABELS[state.topic];
+  const dirLabel = state.direction === 'kaz2rus' ? 'Каз→Рус' : state.direction === 'rus2kaz' ? 'Рус→Каз' : 'Оба';
+
+  document.getElementById('res-emoji').textContent = emoji;
+  document.getElementById('res-score').textContent = `${state.correct}/${state.total}`;
+  document.getElementById('res-label').textContent = `${pct}% — ${label}`;
+  document.getElementById('res-total').textContent = state.total;
+  document.getElementById('res-correct').textContent = state.correct;
+  document.getElementById('res-streak').textContent = state.maxStreak;
+  document.getElementById('res-topic').textContent = topicLabel;
+
+  const dateStr = new Date().toISOString().slice(0, 10);
+  document.getElementById('copy-block').textContent =
+`=== СЕССИЯ: Грамматика ===
+Дата: ${dateStr}
+Тема: ${topicLabel}
+Направление: ${dirLabel}
+Правильно: ${state.correct} / ${state.total} (${pct}%)
+Лучшая серия: ${state.maxStreak}
+Время: ~${mins} мин`;
+}
+
+function copyStats() {
+  navigator.clipboard.writeText(document.getElementById('copy-block').textContent).then(() => {
+    const el = document.getElementById('copy-block');
+    el.style.borderColor = '#22c55e'; el.style.color = '#4ade80';
+    setTimeout(() => { el.style.borderColor = ''; el.style.color = ''; }, 1200);
+  });
+}
+
+function restart() {
+  state.total = 0; state.correct = 0; state.streak = 0; state.maxStreak = 0;
+  state.startTime = Date.now(); state.answered = false;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  updateStats();
+  document.getElementById('progress-fill').style.width = '0%';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
